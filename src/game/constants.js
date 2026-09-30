@@ -13,5 +13,5 @@ export const MAX_SCORE = PHOTO_POINTS + GUESS_POINTS
 // hard: every wrong guess is just wrong
 export const MODES = ['regular', 'hard']
 
-// Which cars free play deals: all of them, or only those tagged sporty in cars.js
-export const POOLS = ['all', 'sporty']
+// Which cars free play deals: all of them, or only cars from makes marked common in src/makes.js
+export const POOLS = ['all', 'common']

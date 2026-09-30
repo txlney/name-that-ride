@@ -32,7 +32,9 @@ function HelpModal({ onClose }) {
                         <li className="flex items-center gap-3"><Pip className="bg-red-500" /> Wrong</li>
                     </ul>
                     <p className="mt-3 text-zinc-400">
-                        <b className="text-white">Hard</b> gives no make hints. Changing mode in the middle of a free play round starts a new round.
+                        Each guess is split into year, make and model. In Regular, the year and make turn green when they're right.
+                        The year turns yellow if it's within 5 years, with an arrow pointing towards the answer, and the make turns
+                        yellow if it's from the same country. <b className="text-white">Hard</b> gives no hints. Changing mode in the middle of a free play round starts a new round.
                     </p>
                 </div>
 
@@ -41,7 +43,7 @@ function HelpModal({ onClose }) {
                     <p>
                         <b className="text-white">Daily</b> is the same car for everyone, once a day. Win it on consecutive days to build a streak, and share your result.
                         <b className="text-white"> Free play</b> gives you unlimited random cars. Switch it to
-                        <b className="text-white"> Sporty</b> for only sports cars, supercars and hypercars.
+                        <b className="text-white"> Common</b> for only cars from well-known makes.
                     </p>
                 </div>
 

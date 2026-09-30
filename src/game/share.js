@@ -13,7 +13,7 @@ export function shareText(round) {
         .join('')
     const title = round.kind === 'daily'
         ? `Name That Ride #${round.day}`
-        : `Name That Ride · Free play${round.pool === 'sporty' ? ' · Sporty' : ''}`
+        : `Name That Ride · Free play${round.pool === 'common' ? ' · Common' : ''}`
     const mode = round.mode === 'hard' ? ' · Hard' : ''
     const revealed = Math.round((round.elapsed / ROUND_MS) * 100)
     return `${title}${mode}\n${squares}\n📷 ${revealed}% revealed · ${round.score.toLocaleString()} pts`

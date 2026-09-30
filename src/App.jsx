@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { IoCalendarOutline, IoCarSportOutline, IoInfinite, IoSpeedometerOutline } from 'react-icons/io5'
+import { IoCalendarOutline, IoCarSportOutline, IoInfinite, IoStarOutline } from 'react-icons/io5'
 import cars from './cars'
 import { ROUND_MS } from './game/constants'
 import { peekCar } from './game/deck'
@@ -21,14 +21,14 @@ import StatsModal from './components/StatsModal'
 import TimerBar from './components/TimerBar'
 
 const HELP_SEEN_KEY = 'ntr:help-seen'
-const sportyCars = cars.filter(car => car.sporty)
+const commonCars = cars.filter(car => car.common)
 
 const POOL_OPTIONS = [
     { value: 'all', label: <><IoCarSportOutline size={16} /> All cars</>, title: 'Every car in the game' },
     {
-        value: 'sporty',
-        label: <><IoSpeedometerOutline size={16} /> Sporty</>,
-        title: 'Only sports cars, supercars and hypercars',
+        value: 'common',
+        label: <><IoStarOutline size={15} /> Common</>,
+        title: 'Only cars from well-known makes',
         activeClass: 'bg-amber-400 text-amber-950',
     },
 ]
@@ -127,7 +127,7 @@ function App() {
                         imageReady={imageReady}
                         onImageLoad={setLoadedImage}
                         onStart={game.toggle}
-                        caption={round.kind === 'daily' ? `Daily #${round.day}` : round.pool === 'sporty' ? 'Free play · Sporty' : 'Free play'}
+                        caption={round.kind === 'daily' ? `Daily #${round.day}` : round.pool === 'common' ? 'Free play · Common' : 'Free play'}
                     />
                     <TimerBar remaining={1 - round.elapsed / ROUND_MS} />
                     <GuessPips
@@ -149,7 +149,7 @@ function App() {
                     </p>
                 )}
                 {status === 'paused' && (
-                    <GuessSearch cars={round.pool === 'sporty' ? sportyCars : cars} guessedIds={guessedIds} onGuess={game.guess} onGiveUp={game.giveUp} />
+                    <GuessSearch cars={round.pool === 'common' ? commonCars : cars} guessedIds={guessedIds} onGuess={game.guess} onGiveUp={game.giveUp} />
                 )}
                 {finished && (
                     <RoundSummary
