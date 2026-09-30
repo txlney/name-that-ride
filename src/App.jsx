@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { IoCalendarOutline, IoInfinite } from 'react-icons/io5'
+import { IoCalendarOutline, IoCarSportOutline, IoInfinite, IoSpeedometerOutline } from 'react-icons/io5'
 import cars from './cars'
 import { ROUND_MS } from './game/constants'
 import { peekCar } from './game/deck'
@@ -21,6 +21,17 @@ import StatsModal from './components/StatsModal'
 import TimerBar from './components/TimerBar'
 
 const HELP_SEEN_KEY = 'ntr:help-seen'
+const sportyCars = cars.filter(car => car.sporty)
+
+const POOL_OPTIONS = [
+    { value: 'all', label: <><IoCarSportOutline size={16} /> All cars</>, title: 'Every car in the game' },
+    {
+        value: 'sporty',
+        label: <><IoSpeedometerOutline size={16} /> Sporty</>,
+        title: 'Only sports cars, supercars and hypercars',
+        activeClass: 'bg-amber-400 text-amber-950',
+    },
+]
 
 function App() {
     const game = useGame()
@@ -49,8 +60,8 @@ function App() {
 
     // Start loading the next free play photo while this round's result is showing
     useEffect(() => {
-        if (finished && round.kind === 'free') new Image().src = peekCar().image
-    }, [finished, round.kind])
+        if (finished && round.kind === 'free') new Image().src = peekCar(game.preferredPool).image
+    }, [finished, round.kind, game.preferredPool])
 
     // Space starts/pauses, unless the player is typing or a button already has focus
     useEffect(() => {
@@ -91,7 +102,12 @@ function App() {
                 <Header onHelp={() => setModal('help')} onStats={() => setModal('stats')} />
 
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <SegmentedControl label="Game type" options={viewOptions} value={game.view} onChange={game.switchView} />
+                    <div className="flex flex-wrap items-center gap-2">
+                        <SegmentedControl label="Game type" options={viewOptions} value={game.view} onChange={game.switchView} />
+                        {game.view === 'free' && (
+                            <SegmentedControl label="Cars" options={POOL_OPTIONS} value={game.preferredPool} onChange={game.changePool} />
+                        )}
+                    </div>
                     <ModeToggle
                         mode={game.preferredMode}
                         inProgress={game.inProgress}
@@ -111,7 +127,7 @@ function App() {
                         imageReady={imageReady}
                         onImageLoad={setLoadedImage}
                         onStart={game.toggle}
-                        caption={round.kind === 'daily' ? `Daily #${round.day}` : 'Free play'}
+                        caption={round.kind === 'daily' ? `Daily #${round.day}` : round.pool === 'sporty' ? 'Free play · Sporty' : 'Free play'}
                     />
                     <TimerBar remaining={1 - round.elapsed / ROUND_MS} />
                     <GuessPips
@@ -133,7 +149,7 @@ function App() {
                     </p>
                 )}
                 {status === 'paused' && (
-                    <GuessSearch cars={cars} guessedIds={guessedIds} onGuess={game.guess} onGiveUp={game.giveUp} />
+                    <GuessSearch cars={round.pool === 'sporty' ? sportyCars : cars} guessedIds={guessedIds} onGuess={game.guess} onGiveUp={game.giveUp} />
                 )}
                 {finished && (
                     <RoundSummary

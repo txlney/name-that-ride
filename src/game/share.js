@@ -11,7 +11,9 @@ export function shareText(round) {
             return guess ? EMOJI[guessResult(guess, round.car, round.mode)] : '⬛'
         })
         .join('')
-    const title = round.kind === 'daily' ? `Name That Ride #${round.day}` : 'Name That Ride · Free play'
+    const title = round.kind === 'daily'
+        ? `Name That Ride #${round.day}`
+        : `Name That Ride · Free play${round.pool === 'sporty' ? ' · Sporty' : ''}`
     const mode = round.mode === 'hard' ? ' · Hard' : ''
     const revealed = Math.round((round.elapsed / ROUND_MS) * 100)
     return `${title}${mode}\n${squares}\n📷 ${revealed}% revealed · ${round.score.toLocaleString()} pts`

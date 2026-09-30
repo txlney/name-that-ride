@@ -40,7 +40,8 @@ function HelpModal({ onClose }) {
                     <div className="mb-2 font-semibold text-white">Daily and Free play</div>
                     <p>
                         <b className="text-white">Daily</b> is the same car for everyone, once a day. Win it on consecutive days to build a streak, and share your result.
-                        <b className="text-white"> Free play</b> gives you unlimited random cars.
+                        <b className="text-white"> Free play</b> gives you unlimited random cars. Switch it to
+                        <b className="text-white"> Sporty</b> for only sports cars, supercars and hypercars.
                     </p>
                 </div>
 

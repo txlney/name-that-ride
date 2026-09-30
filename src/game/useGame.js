@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from 'react'
 import cars from '../cars'
 import { range, shuffle } from '../utils'
-import { MAX_GUESSES, MAX_SCORE, MODES, ROUND_MS, TILE_COUNT } from './constants'
+import { MAX_GUESSES, MAX_SCORE, MODES, POOLS, ROUND_MS, TILE_COUNT } from './constants'
 import { dailyCar, dailyTileOrder, dayNumber } from './daily'
 import { drawCar } from './deck'
 import { guessPoints, photoPoints } from './scoring'
@@ -9,7 +9,7 @@ import { normalizeStats, recordRound } from './stats'
 import { load, save } from './storage'
 
 const TICK_MS = 100
-const KEYS = { mode: 'ntr:mode', view: 'ntr:view', daily: 'ntr:daily', stats: 'ntr:stats' }
+const KEYS = { mode: 'ntr:mode', pool: 'ntr:pool', view: 'ntr:view', daily: 'ntr:daily', stats: 'ntr:stats' }
 const STATUSES = ['ready', 'running', 'paused', 'won', 'lost']
 const carsById = new Map(cars.map(car => [car.id, car]))
 
@@ -25,12 +25,13 @@ function baseRound(fields) {
 
 let freeRoundCount = 0
 
-function createFreeRound(mode) {
+function createFreeRound(mode, pool) {
     return baseRound({
         key: `free-${freeRoundCount++}`,
         kind: 'free',
         mode,
-        car: drawCar(),
+        pool,
+        car: drawCar(pool),
         tileOrder: shuffle(range(TILE_COUNT)),
     })
 }
@@ -153,10 +154,15 @@ function loadMode() {
     return MODES.includes(mode) ? mode : 'regular'
 }
 
-function initState(mode) {
+function loadPool() {
+    const pool = load(KEYS.pool, 'all')
+    return POOLS.includes(pool) ? pool : 'all'
+}
+
+function initState({ mode, pool }) {
     return {
         view: load(KEYS.view, 'daily') === 'free' ? 'free' : 'daily',
-        free: createFreeRound(mode),
+        free: createFreeRound(mode, pool),
         daily: restoreDailyRound(dayNumber(new Date()), mode),
         stats: normalizeStats(load(KEYS.stats, null)),
         lastFinished: null,
@@ -165,7 +171,8 @@ function initState(mode) {
 
 export function useGame() {
     const [preferredMode, setPreferredMode] = useState(loadMode)
-    const [state, dispatch] = useReducer(reducer, preferredMode, initState)
+    const [preferredPool, setPreferredPool] = useState(loadPool)
+    const [state, dispatch] = useReducer(reducer, { mode: preferredMode, pool: preferredPool }, initState)
     const round = state[state.view]
     const running = round.status === 'running'
 
@@ -196,7 +203,15 @@ export function useGame() {
         save(KEYS.mode, mode)
         dispatch({ type: 'setMode', mode })
         // Switching mid-round in free play restarts with a new car
-        if (round.kind === 'free' && inProgress) dispatch({ type: 'newFreeRound', round: createFreeRound(mode) })
+        if (round.kind === 'free' && inProgress) dispatch({ type: 'newFreeRound', round: createFreeRound(mode, preferredPool) })
+    }
+
+    function changePool(pool) {
+        if (pool === preferredPool) return
+        setPreferredPool(pool)
+        save(KEYS.pool, pool)
+        // An unfinished free play round swaps to a car from the new pool; a finished one keeps showing its result
+        if (!isFinished(state.free)) dispatch({ type: 'newFreeRound', round: createFreeRound(preferredMode, pool) })
     }
 
     function switchView(view) {
@@ -213,6 +228,7 @@ export function useGame() {
         stats: state.stats,
         lastFinished: state.lastFinished,
         preferredMode,
+        preferredPool,
         finished,
         inProgress,
         modeLocked: round.kind === 'daily' && inProgress,
@@ -220,12 +236,13 @@ export function useGame() {
         toggle: () => dispatch({ type: 'toggle' }),
         guess: car => dispatch({ type: 'guess', car }),
         giveUp: () => dispatch({ type: 'giveUp' }),
-        nextFreeRound: () => dispatch({ type: 'newFreeRound', round: createFreeRound(preferredMode) }),
+        nextFreeRound: () => dispatch({ type: 'newFreeRound', round: createFreeRound(preferredMode, preferredPool) }),
         refreshDaily: () => {
             const today = dayNumber(new Date())
             if (state.daily.day !== today) dispatch({ type: 'setDaily', round: createDailyRound(today, preferredMode) })
         },
         changeMode,
+        changePool,
         switchView,
     }
 }

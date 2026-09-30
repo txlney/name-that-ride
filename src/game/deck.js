@@ -1,17 +1,21 @@
 import cars from '../cars'
 import { shuffle } from '../utils'
 
-const playable = cars.filter(car => car.image)
-let deck = []
+// Free play can deal from every car, or only the ones tagged sporty in cars.js
+const playable = {
+    all: cars.filter(car => car.image),
+    sporty: cars.filter(car => car.image && car.sporty),
+}
+const decks = { all: [], sporty: [] }
 
-// Deals every car once, in random order, before any repeats
-export function drawCar() {
-    if (deck.length === 0) deck = shuffle(playable)
-    return deck.pop()
+// Deals every car in the pool once, in random order, before any repeats
+export function drawCar(pool) {
+    if (decks[pool].length === 0) decks[pool] = shuffle(playable[pool])
+    return decks[pool].pop()
 }
 
 // The car the next drawCar() will return, so its photo can be preloaded
-export function peekCar() {
-    if (deck.length === 0) deck = shuffle(playable)
-    return deck[deck.length - 1]
+export function peekCar(pool) {
+    if (decks[pool].length === 0) decks[pool] = shuffle(playable[pool])
+    return decks[pool][decks[pool].length - 1]
 }
