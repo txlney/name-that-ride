@@ -1,4 +1,5 @@
 import { GRACE_MS, GUESS_POINTS, MAX_GUESSES, MAX_SCORE, PHOTO_POINTS, ROUND_MS } from '../game/constants'
+import { useVariant } from '../game/variant'
 import Modal from './Modal'
 
 function Pip({ className }) {
@@ -6,11 +7,13 @@ function Pip({ className }) {
 }
 
 function HelpModal({ onClose }) {
+    const { help } = useVariant()
+
     return (
         <Modal title="How to play" onClose={onClose}>
             <div className="mt-4 space-y-4 text-sm leading-relaxed text-zinc-300">
                 <p>
-                    A photo of a car is hidden behind black tiles. Press <b className="text-white">Start</b> and the tiles uncover
+                    {help.intro} is hidden behind black tiles. Press <b className="text-white">Start</b> and the tiles uncover
                     over {ROUND_MS / 1000} seconds. <b className="text-white">Pause</b> whenever you think you know it, then search
                     and guess. You have {MAX_GUESSES} guesses.
                 </p>
@@ -27,23 +30,20 @@ function HelpModal({ onClose }) {
                 <div className="rounded-xl bg-zinc-950 p-4">
                     <div className="mb-2 font-semibold text-white">Modes</div>
                     <ul className="space-y-2">
-                        <li className="flex items-center gap-3"><Pip className="bg-emerald-500" /> Correct car</li>
-                        <li className="flex items-center gap-3"><Pip className="bg-yellow-400" /> Right make, wrong model <span className="text-zinc-500">(Regular only)</span></li>
+                        <li className="flex items-center gap-3"><Pip className="bg-emerald-500" /> {help.correct}</li>
+                        <li className="flex items-center gap-3"><Pip className="bg-yellow-400" /> {help.close} <span className="text-zinc-500">(Regular only)</span></li>
                         <li className="flex items-center gap-3"><Pip className="bg-red-500" /> Wrong</li>
                     </ul>
                     <p className="mt-3 text-zinc-400">
-                        Each guess is split into year, make and model. In Regular, the year and make turn green when they're right.
-                        The year turns yellow if it's within 5 years, with an arrow pointing towards the answer, and the make turns
-                        yellow if it's from the same country. <b className="text-white">Hard</b> gives no hints. Changing mode in the middle of a free play round starts a new round.
+                        {help.hints} <b className="text-white">Hard</b> gives no hints. Changing mode in the middle of a free play round starts a new round.
                     </p>
                 </div>
 
                 <div className="rounded-xl bg-zinc-950 p-4">
                     <div className="mb-2 font-semibold text-white">Daily and Free play</div>
                     <p>
-                        <b className="text-white">Daily</b> is the same car for everyone, once a day. Win it on consecutive days to build a streak, and share your result.
-                        <b className="text-white"> Free play</b> gives you unlimited random cars. Switch it to
-                        <b className="text-white"> Common</b> for only cars from well-known makes.
+                        <b className="text-white">Daily</b> is {help.daily}, once a day. Win it on consecutive days to build a streak, and share your result.
+                        <b className="text-white"> Free play</b> gives you {help.freePlay}
                     </p>
                 </div>
 

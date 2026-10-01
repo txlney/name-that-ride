@@ -7,7 +7,7 @@ function format(ms) {
     return `${pad(Math.floor(total / 3600))}:${pad(Math.floor(total / 60) % 60)}:${pad(total % 60)}`
 }
 
-// Time left until the next daily car; calls onNewDay once the date rolls over
+// Time left until the next daily; calls onNewDay once the date rolls over
 function Countdown({ day, onNewDay }) {
     const [now, setNow] = useState(() => Date.now())
 

@@ -1,6 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useVariant } from '../game/variant'
 
-function GuessSearch({ cars, guessedIds, onGuess, onGiveUp }) {
+function GuessSearch({ items, guessedIds, onGuess, onGiveUp }) {
+    const { searchPlaceholder, nounPlural } = useVariant()
     const [query, setQuery] = useState('')
     const [selected, setSelected] = useState(null)
     const [open, setOpen] = useState(false)
@@ -12,8 +14,8 @@ function GuessSearch({ cars, guessedIds, onGuess, onGiveUp }) {
     const matches = useMemo(() => {
         const terms = query.toLowerCase().split(/\s+/).filter(Boolean)
         if (terms.length === 0) return []
-        return cars.filter(car => !guessedIds.has(car.id) && terms.every(term => car.searchText.includes(term)))
-    }, [cars, guessedIds, query])
+        return items.filter(item => !guessedIds.has(item.id) && terms.every(term => item.searchText.includes(term)))
+    }, [items, guessedIds, query])
 
     const showList = open && query.trim() !== ''
 
@@ -21,9 +23,9 @@ function GuessSearch({ cars, guessedIds, onGuess, onGiveUp }) {
         listRef.current?.children[active]?.scrollIntoView({ block: 'nearest' })
     }, [active])
 
-    function choose(car) {
-        setSelected(car)
-        setQuery(car.label)
+    function choose(item) {
+        setSelected(item)
+        setQuery(item.label)
         setOpen(false)
     }
 
@@ -60,7 +62,7 @@ function GuessSearch({ cars, guessedIds, onGuess, onGiveUp }) {
                     aria-expanded={showList}
                     aria-controls={listId}
                     aria-activedescendant={showList && matches[active] ? `${listId}-${active}` : undefined}
-                    placeholder="Search e.g. Ford Ka"
+                    placeholder={searchPlaceholder}
                     value={query}
                     onChange={e => {
                         setQuery(e.target.value)
@@ -87,19 +89,19 @@ function GuessSearch({ cars, guessedIds, onGuess, onGiveUp }) {
                         role="listbox"
                         className="absolute top-full z-10 mt-1 max-h-60 w-full overflow-y-auto rounded bg-white text-zinc-900 shadow-lg"
                     >
-                        {matches.length === 0 && <li className="px-3 py-2 text-zinc-500">No matching cars</li>}
-                        {matches.map((car, i) => (
+                        {matches.length === 0 && <li className="px-3 py-2 text-zinc-500">No matching {nounPlural}</li>}
+                        {matches.map((item, i) => (
                             <li
-                                key={car.id}
+                                key={item.id}
                                 id={`${listId}-${i}`}
                                 role="option"
                                 aria-selected={i === active}
                                 // mousedown fires before the input's blur closes the list
-                                onMouseDown={e => { e.preventDefault(); choose(car) }}
+                                onMouseDown={e => { e.preventDefault(); choose(item) }}
                                 onMouseEnter={() => setActive(i)}
                                 className={`cursor-pointer px-3 py-1.5 ${i === active ? 'bg-blue-100' : ''}`}
                             >
-                                {car.label}
+                                {item.label}
                             </li>
                         ))}
                     </ul>

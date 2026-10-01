@@ -10,9 +10,10 @@ export function guessPoints(guessCount) {
     return Math.round(((MAX_GUESSES - guessCount) / (MAX_GUESSES - 1)) * GUESS_POINTS)
 }
 
-export function guessResult(guess, car, mode) {
-    if (guess.id === car.id) return 'correct'
-    if (mode === 'regular' && guess.make === car.make) return 'close'
+// close: in Regular, a wrong guess the variant counts as near the answer, e.g. the right make
+export function guessResult(guess, answer, mode, variant) {
+    if (guess.id === answer.id) return 'correct'
+    if (mode === 'regular' && variant.isCloseGuess(guess, answer)) return 'close'
     return 'wrong'
 }
 

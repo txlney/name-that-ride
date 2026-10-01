@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { IoShuffle } from 'react-icons/io5'
 import { GUESS_POINTS, MAX_GUESSES, MAX_SCORE, PHOTO_POINTS, ROUND_MS } from '../game/constants'
 import { scoreColor } from '../game/scoring'
+import { useVariant } from '../game/variant'
 import Countdown from './Countdown'
 import Modal from './Modal'
 import ShareButton from './ShareButton'
@@ -26,7 +27,8 @@ function useCountUp(target, duration = 1000) {
     return value
 }
 
-function ResultModal({ round, onClose, onNextCar, onNewDay }) {
+function ResultModal({ round, onClose, onNext, onNewDay }) {
+    const { noun, reveal, frame } = useVariant()
     const won = round.status === 'won'
     const perfect = round.score === MAX_SCORE
     const displayScore = useCountUp(round.score)
@@ -36,13 +38,13 @@ function ResultModal({ round, onClose, onNextCar, onNewDay }) {
     return (
         <Modal title={title} onClose={onClose}>
             <img
-                src={round.car.image}
-                alt={round.car.label}
-                className={`mt-4 aspect-video w-full rounded-xl object-cover ring-2 ${won ? 'ring-emerald-500' : 'ring-red-500'}`}
+                src={round.answer.image}
+                alt={round.answer.label}
+                className={`mt-4 w-full rounded-xl ring-2 ${frame.aspect} ${frame.image} ${frame.backdrop} ${frame.modalWidth} ${won ? 'ring-emerald-500' : 'ring-red-500'}`}
             />
             <p className="mt-4 text-center text-zinc-400">
-                {won ? 'It was the' : 'The hidden car was the'}{' '}
-                <span className="font-bold text-white">{round.car.label}</span>
+                {won ? reveal.won : reveal.lost}{' '}
+                <span className="font-bold text-white">{round.answer.label}</span>
             </p>
 
             <div className="mt-5 text-center">
@@ -64,10 +66,10 @@ function ResultModal({ round, onClose, onNextCar, onNewDay }) {
                 <ShareButton round={round} className="bg-zinc-800 py-2.5 text-white hover:bg-zinc-700" />
                 {round.kind === 'free' ? (
                     <button
-                        onClick={onNextCar}
+                        onClick={onNext}
                         className="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-400 py-2.5 font-semibold text-blue-950 transition hover:bg-blue-300"
                     >
-                        <IoShuffle size={18} /> Next car
+                        <IoShuffle size={18} /> Next {noun}
                     </button>
                 ) : (
                     <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-950 py-1.5">

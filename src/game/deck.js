@@ -1,24 +1,29 @@
-import cars from '../cars'
 import { shuffle } from '../utils'
 
-// Free play can deal from every car, or only cars from makes marked common in src/makes.js
-const allPlayable = cars.filter(car => car.image)
-const commonPlayable = allPlayable.filter(car => car.common)
-const playable = {
-    all: allPlayable,
-    // Falls back to every car if no make is marked common, so there's always something to deal
-    common: commonPlayable.length > 0 ? commonPlayable : allPlayable,
-}
-const decks = { all: [], common: [] }
+// Free play deals from one of the variant's pools, e.g. every car, or only cars from common makes.
+// Each pool: { value, filter? }. A pool with no filter, or whose filter matches nothing, deals every item.
+export function createDeck(items, pools) {
+    const allPlayable = items.filter(item => item.image)
+    const playable = Object.fromEntries(pools.map(({ value, filter }) => {
+        const matching = filter ? allPlayable.filter(filter) : allPlayable
+        return [value, matching.length > 0 ? matching : allPlayable]
+    }))
+    const decks = Object.fromEntries(pools.map(({ value }) => [value, []]))
 
-// Deals every car in the pool once, in random order, before any repeats
-export function drawCar(pool) {
-    if (decks[pool].length === 0) decks[pool] = shuffle(playable[pool])
-    return decks[pool].pop()
-}
+    function refill(pool) {
+        if (decks[pool].length === 0) decks[pool] = shuffle(playable[pool])
+    }
 
-// The car the next drawCar() will return, so its photo can be preloaded
-export function peekCar(pool) {
-    if (decks[pool].length === 0) decks[pool] = shuffle(playable[pool])
-    return decks[pool][decks[pool].length - 1]
+    return {
+        // Deals every item in the pool once, in random order, before any repeats
+        draw(pool) {
+            refill(pool)
+            return decks[pool].pop()
+        },
+        // The item the next draw() will return, so its photo can be preloaded
+        peek(pool) {
+            refill(pool)
+            return decks[pool][decks[pool].length - 1]
+        },
+    }
 }

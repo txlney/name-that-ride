@@ -1,12 +1,14 @@
 import { FaPlay, FaPause } from 'react-icons/fa'
 import { MAX_GUESSES } from '../game/constants'
 import { guessResult } from '../game/scoring'
+import { useVariant } from '../game/variant'
 import { range } from '../utils'
 
 const PIP_COLORS = { correct: 'bg-emerald-500', close: 'bg-yellow-400', wrong: 'bg-red-500' }
 
 // points: what a correct guess is worth right now (or the final score once the round is over)
-function GuessPips({ guesses, car, mode, running, canToggle, onToggle, points, pointsLabel }) {
+function GuessPips({ guesses, answer, mode, running, canToggle, onToggle, points, pointsLabel }) {
+    const variant = useVariant()
     return (
         <div className="flex items-stretch rounded-b-2xl bg-zinc-950">
             <button
@@ -20,7 +22,7 @@ function GuessPips({ guesses, car, mode, running, canToggle, onToggle, points, p
             <div className="flex flex-1 items-center gap-1.5 px-3 py-3.5 sm:gap-3 sm:px-4" aria-label={`${guesses.length} of ${MAX_GUESSES} guesses used`}>
                 {range(MAX_GUESSES).map(i => {
                     const guess = guesses[i]
-                    const color = guess ? PIP_COLORS[guessResult(guess, car, mode)] : 'bg-zinc-800'
+                    const color = guess ? PIP_COLORS[guessResult(guess, answer, mode, variant)] : 'bg-zinc-800'
                     return <div key={i} className={`h-2.5 flex-1 rounded-full transition-colors duration-300 ${color}`} />
                 })}
             </div>

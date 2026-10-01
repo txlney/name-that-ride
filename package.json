@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "optimize-images": "node scripts/optimize-images.mjs",
-    "add-car": "node scripts/add-car.mjs"
+    "add-car": "node scripts/add-car.mjs",
+    "fetch-pokemon": "node scripts/fetch-pokemon.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
