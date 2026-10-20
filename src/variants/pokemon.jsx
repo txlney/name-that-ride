@@ -23,7 +23,7 @@ const pokemonVariant = {
     storagePrefix: 'ntp',
     title: { lead: 'Name That', accent: 'Pokémon' },
     Icon: MdCatchingPokemon,
-    otherGame: { href: '/', label: 'Try Name That Ride', Icon: IoCarSport },
+    otherGame: { href: import.meta.env.BASE_URL, label: 'Try Name That Ride', Icon: IoCarSport },
 
     items: pokemon,
     noun: 'Pokémon',
