@@ -1,8 +1,8 @@
-import { IoCarSport, IoCarSportOutline, IoStarOutline } from 'react-icons/io5'
-import { MdCatchingPokemon } from 'react-icons/md'
+import { IoCarSportOutline, IoStarOutline } from 'react-icons/io5'
 import cars from '../cars'
 import { createDaily } from '../game/daily'
 import { createDeck } from '../game/deck'
+import { getGame } from '../games'
 
 const CLOSE_YEARS = 5
 
@@ -23,9 +23,7 @@ const carsVariant = {
     id: 'cars',
     // Kept from before there were other games, so existing players keep their stats
     storagePrefix: 'ntr',
-    title: { lead: 'Name That', accent: 'Ride' },
-    Icon: IoCarSport,
-    otherGame: { href: `${import.meta.env.BASE_URL}pokemon/`, label: 'Try Name That Pokémon', Icon: MdCatchingPokemon },
+    title: getGame('cars').title,
 
     items: cars,
     noun: 'car',

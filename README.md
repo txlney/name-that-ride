@@ -2,7 +2,7 @@
 
 Guess the hidden car before the photo is fully revealed.
 
-The same game also runs as **Name That Pokémon** at `/pokemon/` (`http://localhost:5173/pokemon/` in dev), using official Pokémon artwork in a square frame.
+The same game also runs as **Name That Pokémon** at `/pokemon/` (`http://localhost:5173/name-that-ride/pokemon/` in dev), using official Pokémon artwork in a square frame. Switch between games from the menu under the logo.
 
 ## Running it
 
@@ -45,7 +45,21 @@ Columns are **Gen** and **Name**. In Regular, the gen turns yellow (with an arro
 
 ## Variants
 
-Everything that differs between the two games is a **variant** in `src/variants/` (`cars.jsx`, `pokemon.jsx`): the items, guess columns and hint rules, free play pools, frame shape, wording and storage prefix. Each game is its own page (`index.html`, `pokemon/index.html`, listed in `vite.config.js`) that renders `<App variant={...} />`, so it only loads its own photos. To add another game, write a variant, a data module and a page.
+Everything that differs between the two games is a **variant** in `src/variants/` (`cars.jsx`, `pokemon.jsx`): the items, guess columns and hint rules, free play pools, frame shape, wording and storage prefix. Each game is its own page (`index.html`, `pokemon/index.html`, listed in `vite.config.js`) that renders `<App variant={...} />`, so it only loads its own photos. To add another reveal game, write a variant, a data module and a page.
+
+## Games menu
+
+Clicking the logo and title opens a menu of every game on the site. The list lives in `src/games.jsx` (title, icon, one-line blurb, link and an optional badge such as "Soon"), and variants take their title from it. To add a game to the menu, add an entry there and a page for it in `vite.config.js`.
+
+## Higher or Lower
+
+A second game at `/higher-lower/`, using the same cars. Two cars are shown with the first one's year visible: is the second newer or older? After each guess the second car becomes the one to beat. Use the buttons or press ↑ / ↓.
+
+- **Daily**: the same 10 guesses for everyone, scored out of 10. A wrong guess doesn't end it. Progress is saved, so reloading doesn't give a second go.
+- **Endless**: keeps going until the first wrong guess, from **All cars** or **Common** makes, with a best streak for each.
+- The two cars are never from the same year. They start at least 15 years apart and get closer as the run goes on (the `GAP_BANDS` in `src/higher-lower/chain.js`).
+
+Everything for it is in `src/higher-lower/`: `chain.js` picks the cars, `useHigherLower.js` holds the game state and saving, and the rest are its components. It shares `Header`, `Modal`, `SegmentedControl`, `ShareButton`, `Countdown` and `Confetti` with the other games. Its localStorage keys start with `hl:`.
 
 ## Layout
 

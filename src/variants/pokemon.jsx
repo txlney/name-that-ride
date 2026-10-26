@@ -1,8 +1,9 @@
-import { IoAlbumsOutline, IoCarSport } from 'react-icons/io5'
+import { IoAlbumsOutline } from 'react-icons/io5'
 import { MdCatchingPokemon } from 'react-icons/md'
 import pokemon from '../pokemon'
 import { createDaily } from '../game/daily'
 import { createDeck } from '../game/deck'
+import { getGame } from '../games'
 
 const sharesType = (guess, answer) => guess.types.some(type => answer.types.includes(type))
 
@@ -21,9 +22,7 @@ const pools = [
 const pokemonVariant = {
     id: 'pokemon',
     storagePrefix: 'ntp',
-    title: { lead: 'Name That', accent: 'Pokémon' },
-    Icon: MdCatchingPokemon,
-    otherGame: { href: import.meta.env.BASE_URL, label: 'Try Name That Ride', Icon: IoCarSport },
+    title: getGame('pokemon').title,
 
     items: pokemon,
     noun: 'Pokémon',

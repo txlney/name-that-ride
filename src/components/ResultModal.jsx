@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { IoShuffle } from 'react-icons/io5'
 import { GUESS_POINTS, MAX_GUESSES, MAX_SCORE, PHOTO_POINTS, ROUND_MS } from '../game/constants'
 import { scoreColor } from '../game/scoring'
+import { shareText } from '../game/share'
 import { useVariant } from '../game/variant'
 import Countdown from './Countdown'
 import Modal from './Modal'
@@ -28,7 +29,8 @@ function useCountUp(target, duration = 1000) {
 }
 
 function ResultModal({ round, onClose, onNext, onNewDay }) {
-    const { noun, reveal, frame } = useVariant()
+    const variant = useVariant()
+    const { noun, reveal, frame } = variant
     const won = round.status === 'won'
     const perfect = round.score === MAX_SCORE
     const displayScore = useCountUp(round.score)
@@ -63,7 +65,7 @@ function ResultModal({ round, onClose, onNext, onNewDay }) {
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-2">
-                <ShareButton round={round} className="bg-zinc-800 py-2.5 text-white hover:bg-zinc-700" />
+                <ShareButton text={shareText(round, variant)} className="bg-zinc-800 py-2.5 text-white hover:bg-zinc-700" />
                 {round.kind === 'free' ? (
                     <button
                         onClick={onNext}

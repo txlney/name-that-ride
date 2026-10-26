@@ -9,11 +9,12 @@ export default defineConfig({
   base: '/name-that-ride/',
   plugins: [react(), tailwindcss()],
   build: {
-    // One page per game, so each only loads its own photos: / is Name That Ride, /pokemon/ is Name That Pokémon
+    // One page per game, so each only loads its own photos: see src/games.jsx
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         pokemon: resolve(import.meta.dirname, 'pokemon/index.html'),
+        'higher-lower': resolve(import.meta.dirname, 'higher-lower/index.html'),
       },
     },
   },

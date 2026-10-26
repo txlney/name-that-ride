@@ -54,10 +54,10 @@ function App({ variant }) {
         if (finished && round.kind === 'free') new Image().src = variant.deck.peek(game.preferredPool).image
     }, [finished, round.kind, game.preferredPool, variant])
 
-    // Space starts/pauses, unless the player is typing or a button already has focus
+    // Space starts/pauses, unless the player is typing or a button or link already has focus
     useEffect(() => {
         const onKeyDown = e => {
-            if (e.code !== 'Space' || modal || e.target.closest('input, textarea, button')) return
+            if (e.code !== 'Space' || modal || e.target.closest('input, textarea, button, a')) return
             e.preventDefault()
             if (canToggle) game.toggle()
         }
@@ -91,7 +91,7 @@ function App({ variant }) {
         <VariantContext.Provider value={variant}>
             <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,#1c2433_0%,#111111_55%)]">
                 <main className="mx-auto w-full max-w-3xl px-4 pb-20">
-                    <Header onHelp={() => setModal('help')} onStats={() => setModal('stats')} />
+                    <Header gameId={variant.id} onHelp={() => setModal('help')} onStats={() => setModal('stats')} />
 
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex flex-wrap items-center gap-2">

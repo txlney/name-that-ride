@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { IoCheckmark, IoShareSocialOutline } from 'react-icons/io5'
-import { shareText } from '../game/share'
-import { useVariant } from '../game/variant'
 
-function ShareButton({ round, className = '' }) {
-    const variant = useVariant()
+// text: what gets copied, e.g. from shareText in src/game/share.js
+function ShareButton({ text, className = '' }) {
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
@@ -14,7 +12,6 @@ function ShareButton({ round, className = '' }) {
     }, [copied])
 
     async function share() {
-        const text = shareText(round, variant)
         try {
             await navigator.clipboard.writeText(text)
             setCopied(true)
