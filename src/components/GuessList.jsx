@@ -32,7 +32,19 @@ function GuessList({ guesses, answer, mode }) {
                     const results = columnResults(guess, answer, mode, variant)
                     return (
                         <li key={guess.id} className={grid} aria-label={guess.label}>
-                            {columns.map(({ key, label }) => (
+                            {columns.map(({ key, label }) => Array.isArray(guess[key]) ? (
+                                // A list column splits its cell, one coloured segment per value
+                                <span key={key} title={label} className="flex min-h-10 min-w-0 gap-px">
+                                    {guess[key].map((value, i) => (
+                                        <span
+                                            key={value}
+                                            className={`flex flex-1 min-w-0 items-center first:rounded-l last:rounded-r px-2 py-1.5 text-sm leading-tight break-words transition-colors ${CELL_COLORS[results[key][i]]}`}
+                                        >
+                                            {value}
+                                        </span>
+                                    ))}
+                                </span>
+                            ) : (
                                 <span
                                     key={key}
                                     title={label}

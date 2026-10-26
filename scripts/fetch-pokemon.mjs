@@ -1,4 +1,4 @@
-// Downloads every Pokémon's name, types and official artwork from PokeAPI.
+// Downloads every Pokémon's name, types, evolution chain and official artwork from PokeAPI.
 // Usage: npm run fetch-pokemon
 // Writes src/pokemon.json and src/assets/pokemon/<id>.webp. Safe to re-run: anything already downloaded is skipped.
 import { existsSync } from 'node:fs'
@@ -28,7 +28,8 @@ async function worker() {
     while (ids.length > 0) {
         const id = ids.shift()
         try {
-            if (!byId.has(id)) byId.set(id, await fetchDetails(id))
+            // Entries saved before chains were recorded get fetched again
+            if (!byId.get(id)?.chain) byId.set(id, await fetchDetails(id))
             const image = path.join(IMAGE_DIR, `${id}.webp`)
             if (!existsSync(image)) await downloadArtwork(id, image)
         } catch (err) {
@@ -43,7 +44,9 @@ async function fetchDetails(id) {
     const [species, pokemon] = await Promise.all([getJson(`${API}/pokemon-species/${id}`), getJson(`${API}/pokemon/${id}`)])
     const name = species.names.find(n => n.language.name === 'en')?.name ?? capitalize(species.name)
     const types = pokemon.types.sort((a, b) => a.slot - b.slot).map(t => capitalize(t.type.name))
-    return { id, name, types }
+    // Pokémon in the same evolution line share a chain id
+    const chain = Number(species.evolution_chain.url.match(/\/(\d+)\/?$/)[1])
+    return { id, name, types, chain }
 }
 
 async function downloadArtwork(id, target) {
